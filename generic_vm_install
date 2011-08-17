@@ -1,0 +1,34 @@
+SYNC_URL=http://mirrors.kernel.org/archlinux/$repo/os/$arch
+TIMEZONE=Europe/Amsterdam
+
+# Do you want to have additional pacman repositories or packages available at runtime (during installation)?
+# RUNTIME_REPOSITORIES = array like this ('name1' 'location of repo 1' ['name2' 'location of repo2',..])
+RUNTIME_REPOSITORIES=
+# space separated list
+RUNTIME_PACKAGES=
+
+# packages to install
+TARGET_GROUPS=base 
+TARGET_PACKAGES_EXCLUDE='nano reiserfsprogs cryptsetup lvm2 xfsprogs'
+TARGET_PACKAGES='openssh e2fsprogs vim' 
+
+worker_intro () {
+inform "Automatic procedure running the generic-install-on-vda example config. THIS WILL ERASE AND OVERWRITE YOUR /DEV/SDA. IF YOU DO NOT WANT THIS PRESS CTRL+C WITHIN 10 SECONDS"
+sleep 10
+}
+
+worker_configure_system () {
+preconfigure_target
+sed -i 's/^HOSTNAME="myhost"/HOSTNAME="archvm"/' $var_TARGET_DIR/etc/rc.conf
+sed -i 's/^MODULES=""/MODULES="virtio virtio_blk virtio_ring virtio_net virtio_pci"/' $var_TARGET_DIR/etc/rc.conf
+postconfigure_target
+}
+
+
+# These variables are mandatory
+
+GRUB_DEVICE=/dev/vda
+PARTITIONS='/dev/vda 100:ext2:+ 512:swap *:ext4'
+BLOCKDATA='/dev/vda1 raw no_label ext2;yes;/boot;target;no_opts;no_label;no_params
+/dev/vda2 raw no_label swap;yes;no_mountpoint;target;no_opts;no_label;no_params
+/dev/vda3 raw no_label ext4;yes;/;target;no_opts;no_label;no_params'
